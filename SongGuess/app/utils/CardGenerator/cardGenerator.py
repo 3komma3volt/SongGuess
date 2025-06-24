@@ -26,7 +26,7 @@ class CardGenerator:
         self._qr_text_margin = self.in_px(2) # Margin between the QR code and the text below it in mm
         self._outline_width = self.in_px(0.3) # Width of the outline around the card in mm
 
-        self._font_path = os.path.join(os.path.dirname(__file__), 'fonts')
+        self._font_path = os.path.join(os.path.dirname(__file__), 'Fonts')
 
     @property
     def resolution(self) -> int:

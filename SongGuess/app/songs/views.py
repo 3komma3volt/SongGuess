@@ -108,7 +108,7 @@ def songs_upload():
                 if not song_data:
                     return jsonify({
                         'error': 30,
-                        'message': 'File is not a valid MP3 or does not contain ID3 tags.'
+                        'message': 'File is not a valid MP3.'
                     })
 
                 artist = song_data.get('artist', "Unknown")[0]
