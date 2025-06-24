@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
+
+    <link rel="icon" type="image/png" href="{{ url_for('static',filename='images/favicon.png') }}" />
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/songguess.css') }}">
+    <!--<link rel="stylesheet" href="{{ url_for('static',filename='bootstrap/bootstrap.min.css') }}" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">-->
+     <link rel="stylesheet" href="{{ url_for('static',filename='css/bs-custom.css') }}"> 
+
+    <script src="{{ url_for('static',filename='jquery/jquery-3.7.1.min.js')}}" integrity="sha384-1H217gwSVyLSIfaLxHbE7dRb3v4mYCKbpQvzx0cegeju1MVsGrX5xXxAvs/HgeFs" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static',filename='bootstrap/bootstrap.bundle.min.js') }}" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{{ url_for('static',filename='bootstrap/bootstrap-icons.min.css') }}">
+  {% block includes %}
+  {% endblock %}
+    <meta charset="utf-8">
+    <title>SongGuess - Guess the Year. Feel the Beat.</title>
+  </head>
+  <body>
+
+    <ul class='nav'>
+      <li class='nav-link'>
+        <a href="{{url_for('main.index')}}">Home</a>
+      </li>
+      <li class='nav-link'>
+        <a href="{{url_for('main.play')}}">Play</a>
+      </li>
+      <li class='nav-link'>
+        <a href="{{url_for('main.info')}}">Help</a>
+      </li>
+<li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Songs
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{url_for('songs.songs_list')}}">List</a></li>
+            <li><a class="dropdown-item" href="{{url_for('songs.songs_add')}}">Add</a></li>
+          </ul>
+        </li>
+    </ul>
+<div class="container">
+
+  {% block content %}
+
+  {% endblock %}
+</div>
+
+
+  </body>
+</html>

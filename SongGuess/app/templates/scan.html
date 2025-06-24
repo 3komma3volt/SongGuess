@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+      <div class="top-banner">
+        <strong>&#127925; SongGuess</strong> — <em>Guess the Year. Feel the Beat.</em>  
+    </div>
+<h1 class="mt-3">Scan Card</h1>
+  <div id="qr-reader"></div>
+  <div id="qr-reader-results"></div>
+
+<script>
+    function docReady(fn) {
+        if (document.readyState === "complete"
+            || document.readyState === "interactive") {
+            setTimeout(fn, 1);
+        } else {
+            document.addEventListener("DOMContentLoaded", fn);
+        }
+    }
+
+    docReady(function () {
+        var resultContainer = document.getElementById('qr-reader-results');
+        var lastResult, countResults = 0;
+        function onScanSuccess(decodedText, decodedResult) {
+            if (decodedText !== lastResult) {
+                ++countResults;
+                lastResult = decodedText;
+                // Handle on success condition with the decoded message.
+                console.log(`Scan result ${decodedText}`, decodedResult);
+                location.href = "{{ url_for('play.play_song')}}/" + decodedText;
+            }
+        }
+
+        var html5QrcodeScanner = new Html5QrcodeScanner(
+            "qr-reader", { 
+              fps: 10, 
+              qrbox: 250, 
+              supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
+              formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ] 
+            });
+        html5QrcodeScanner.render(onScanSuccess);
+    });
+</script>
+
+{% endblock %}
+   
+{% block includes %}
+<script src="{{ url_for('static', filename='qrcode/html5-qrcode.min.js') }}"></script>
+{% endblock %}

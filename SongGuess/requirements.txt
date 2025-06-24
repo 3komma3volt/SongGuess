@@ -1,0 +1,6 @@
+flask==3.1
+flask-sqlalchemy==3.1
+flask_migrate==4.1
+mutagen==1.47
+fpdf2==2.8.2
+qrcode==8.2

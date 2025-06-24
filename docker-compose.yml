@@ -1,0 +1,7 @@
+services:
+  songguess:
+    build:
+      context: .
+    ports:
+      - "443:5000"
+    restart: unless-stopped

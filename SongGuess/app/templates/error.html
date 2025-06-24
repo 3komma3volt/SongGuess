@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="mt-3">Error</h1>
+
+<div class="alert alert-danger text-center mt-3" role="alert">
+    {{ error_message |safe }}
+</div>
+<a href="{{ url_for('main.index') }}" class=" mt-3">Back</a>
+
+<script>
+
+</script>
+
+{% endblock %}
+   
+{% block includes %}
+
+{% endblock %}

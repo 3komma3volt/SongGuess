@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+      <div class="top-banner">
+        <strong>&#127925; SongGuess</strong> — <em>Guess the Year. Feel the Beat.</em>  
+    </div>
+<h1 class="mt-3">How to prepare</h1>
+<ol>
+    <li>Upload songs by naviating to <a href="{{ url_for('songs.songs_add') }}">Add Songs</a>.</li>
+    <li>Drag and drop files onto the upload field or select them manually.</li>
+    <li>After uploading the files are parsed and the data is inserted into the database.
+        You can changed everything like removing unnecessary parts of an title or correcting the year or even add the
+        full information, if the MP3 file does not contain an ID3 tag. After changing something, a <i
+            class="bi bi-floppy"></i> button appears. Click it to save the changes.</li>
+    <li>After you have added all songs, you can generate the game cards by navigating to <a
+            href="{{ url_for('songs.songs_list') }}">List Songs</a>.</li>
+    <li>Select all songs for which you will generate the game card by checking its checkbox at the end of the titles
+        entry. A small <i class="bi bi-printer"></i> symbol indicates, that the card has been printed already. By
+        default all unprinted cards are selected.</li>
+    <li>After selecting the songs, click the "Generate Game Cards" button on the bottom of the page.</li>
+    <li>A dialog will open where you can see the generation state and receive the download links for the game cards.
+        Depending on your system, the number of generated cards are reduced to {{ chunk_size }} per sheet.</li>
+    <li>After downloading the game cards, you can print them on a sheet of paper. The game cards are designed to fit on
+        a standard A4 paper. The layout fits AVERY Zweckform C32010-25 business card templates, so you can print decent
+        cards. The cards can be directly printed two sided, if the printer suppors it. Using this feature select "Print
+        double-sided, flip on long side".</li>
+    <li>Cut the cards and start a game</li>
+</ol>
+<h1 class="mt-3">How to play</h1>
+<ol>
+    <li>Shuffle the cards and make a pile with the QR codes facing up.</li>
+    <li>Use your mobile phone and navigate to https://&lt;your computer name&gt; You will get an SSL warning caused by
+        an self signed certificate. As the game is used locally, this warning can be ignored.</li>
+    <li>Navigate to <a href="{{ url_for('main.play') }}">Play</a>, select the back or front camera of your phone and scan the first card.</li>
+    <li>After scanning the card, the song will be played and the game starts.</li>
+    <li>After the song has been played, the player has to guess the song title, artist or release year.</li>
+    <li>After the player has guessed the artist, title or year he gets points accordenly to the count of right guessed parts. Then the next card can be scanned.</li>
+    <li>After all cards have been scanned, the game ends a  nd the player with the most points wins.</li>
+
+</ol>
+{% endblock %}
