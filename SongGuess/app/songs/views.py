@@ -157,9 +157,47 @@ def songs_upload():
             })
 
 
-@songs.route('/songs/remove')
+@songs.route('/songs/delete', methods=['POST'])
 def songs_remove():
-    return render_template('help.html')
+    if request.method == 'POST':
+        data = request.get_json()
+        if len(data) == 0:
+            return jsonify({
+                'error': 70,
+                'message': 'No valid song data provided.'
+            })
+        try:
+            for song in data:
+                if os.path.exists(os.path.join(current_app.config['UPLOAD_FOLDER'], song + '.mp3')):
+                    os.remove(os.path.join(current_app.config['UPLOAD_FOLDER'], song + '.mp3'))
+                song_data = Songs.query.filter_by(song_token=song).first()
+                if song_data:
+                    db.session.delete(song_data)
+            db.session.commit()
+            return jsonify({
+                'error': 0,
+                'message': 'Songs deleted successfully.'
+            })
+        except OSError as e:
+            current_app.logger.error(f"Could not remove file: {e}")
+            db.session.rollback()
+            return jsonify({
+                'error': 21,
+                'message': f'Could not remove file: {e}'
+            })
+        except sqlalchemy.exc.OperationalError as err:
+            current_app.logger.error(f"Database error: {err}")
+            db.session.rollback()
+            return jsonify({
+                'error': 32,
+                'message': f'Database error: Could not delete songs. {str(err)}'
+            })
+        
+    else:
+        return jsonify({
+            'error': 1,
+            'message': 'Invalid request method.'
+        })
 
 @songs.route('/songs/save', methods=['POST'])
 def songs_save():

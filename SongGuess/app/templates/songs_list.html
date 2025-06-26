@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-      <div class="top-banner">
-        <strong>&#127925; SongGuess</strong> — <em>Guess the Year. Feel the Beat.</em>  
-    </div>
+<div class="top-banner">
+    <strong>&#127925; SongGuess</strong> — <em>Guess the Year. Feel the Beat.</em>
+</div>
 {% if songs %}
-    <h1 class="mt-3">Songs</h1>
-    <div class="table-responsive">
+<h1 class="mt-3">Songs</h1>
+<div class="table-responsive">
     <table class="table" id="songList">
         <thead>
             <tr>
@@ -14,8 +14,10 @@
                 <th scope="col">Title</th>
                 <th scope="col">Year</th>
                 <th scope="col">Discogs</th>
-                <th scope="col">Print</th>
-                <th scope="col"><div class="mx-4"></div></th>
+                <th scope="col">Print/Delete</th>
+                <th scope="col">
+                    <div class="mx-4"></div>
+                </th>
             </tr>
         </thead>
         <tbody id="songListBody">
@@ -26,14 +28,15 @@
                         value="{{ song.artist }}" oninput="changed('{{ song.song_token }}')"></td>
                 <td><input id="title-{{ song.song_token }}" class="form-control form-control-sm" type="text"
                         value="{{ song.title }}" oninput="changed('{{ song.song_token }}')"></td>
-                <td><input id="year-{{ song.song_token }}" class="form-control form-control-sm {% if song.year == 0 %}bg-danger{% endif %}" type="number" min="1900"
-                        max="2050" value="{{ song.year }}" onchange="changed('{{ song.song_token }}')"></td>
+                <td><input id="year-{{ song.song_token }}"
+                        class="form-control form-control-sm {% if song.year == 0 %}bg-danger{% endif %}" type="number"
+                        min="1900" max="2050" value="{{ song.year }}" onchange="changed('{{ song.song_token }}')"></td>
                 <td class="align-middle"><a
                         href="https://www.discogs.com/de/search/?q={{ song.artist }}+{{ song.title }}&type=release"
                         target="_blank"><i class="bi bi-disc me-1"></i>Search</a></td>
                 <td class="align-middle text-center">
                     <input class="form-check-input" type="checkbox" value="" {% if not song.card_print_date %}checked{%
-                        endif %} id="print-{{song.song_token}}">{% if song.card_print_date %}<i
+                        endif %} id="selected-{{song.song_token}}">{% if song.card_print_date %}<i
                         class="bi bi-printer text-success ms-2">{% endif %}</i>
                 </td>
                 <td id="state-{{ song.song_token }}"></td>
@@ -43,131 +46,145 @@
 
         </tbody>
     </table>
-    </div>
-    <button class="btn btn-primary mt-2 mb-4" id="btnPrint" data-bs-toggle="modal" data-bs-target="#printModal"
-        onclick="generateCards();"><i class="bi bi-printer me-2"></i>Generate Game Cards</button>
+</div>
+<button class="btn btn-success mt-2 mb-4" id="btnPrint" data-bs-toggle="modal" data-bs-target="#printModal"
+    onclick="generateCards();"><i class="bi bi-printer me-2"></i>Generate Selected Cards</button>
+<button class="btn btn-danger mt-2 mb-4 ms-3" id="btnDelete" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="bi bi-trash me-2"></i>Delete Selected Songs</button>
 
-    {% else %}
-    
-    <div class="alert alert-info text-center mt-3">
+{% else %}
+
+<div class="alert alert-info text-center mt-3">
     <p>No songs available. Please add some songs to the database.</p>
     <p><a href="{{ url_for('songs.songs_add') }}">Add songs</a></p>
-    </div>
+</div>
 
-    {% endif %}
+{% endif %}
 
-    <div class="modal fade" id="printModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Generating Game Cards</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="generationStatus" class="alert alert-primary" role="alert">
-                        Generating <span id="genNum"></span> game cards, please wait...
-                    </div>
-                    <ul id="songDownload">
-                    </ul>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="reloadPage();">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+{% include "modals/generate.html" %}
+{% include "modals/delete.html" %}
 
-        <script>
-            function generateCards() {
-                $("#songDownload").empty();
-                let songList = [];
-                $('table > tbody  > tr').each(function (index, tr) {
-                    if (!document.getElementById('print-' + tr.id.replace('song-', '')).checked) {
-                    return;
-                    }
-                    let song = {
-                        token: tr.id.replace('song-', ''),
-                        artist: document.getElementById('artist-' + tr.id.replace('song-', '')).value,
-                        title: document.getElementById('title-' + tr.id.replace('song-', '')).value,
-                        year: document.getElementById('year-' + tr.id.replace('song-', '')).value,
-                        print: document.getElementById('print-' + tr.id.replace('song-', '')).checked
-                    };
-                    songList.push(song);
-                });
 
-                if (songList.length === 0) {
-                    $('#generationStatus').removeClass('alert-primary').addClass('alert-danger');
-                    $('#generationStatus').html(`No songs selected for game cards generation.`);
-                    return;
-                }
+<script>
+    function deleteSongs() {
 
-                let songListChunks = [];
-                const chunkSize = {{ chunk_size }};
-                for (let i = 0; i < songList.length; i += chunkSize) {
-                    let chunk = songList.slice(i, i + chunkSize);
-                    songListChunks.push(chunk);
-                }
-                let noOfErrors = 0;
-                let finished = 0;
-                //console.log(songListChunks);
-                $(songListChunks).each(function (index, chunk) {
-                    //console.log(`Processing chunk ${index + 1} of ${songListChunks.length}`);
-                    $('#genNum').text(`${index + 1} of ${songListChunks.length}`);
-                    $.ajax({
-                        url: '/songs/generate_cards',
-                        type: 'POST',
-                        data: JSON.stringify(chunk),
-                        contentType: 'application/json',
-                        xhrFields: {
-                            responseType: 'blob'
-                        },
-                        success: function (response) {
+        let songList = [];
+        $('table > tbody  > tr').each(function (index, tr) {
+            if (!document.getElementById('selected-' + tr.id.replace('song-', '')).checked) {
+                return;
+            }
+            songList.push(tr.id.replace('song-', ''));
+        });
+        console.log(songList);
 
-                            const blob = new Blob([response], { type: "application/pdf" });
+        if (songList.length === 0) {
+            $('#deletionStatus').removeClass('alert-primary').addClass('alert-danger');
+            $('#deletionStatus').html(`No songs selected for deleting.`);
+            return;
+        }
+        
+        $.ajax({
+            url: '/songs/delete',
+            type: 'POST',
+            data: JSON.stringify(songList),
+            contentType: 'application/json',
+            processData: false,
+            success: function (response) {
+                $('#deletionStatus').removeClass('alert-danger').addClass('alert-success');
+                $('#deletionStatus').html(`Sucessfully deleted ${songList.length} songs`);
+                reloadPage();
 
-                            const url = window.URL.createObjectURL(blob);
-                            const link = document.createElement('a');
-                            link.href = url;
-                            link.download = `game_cards_${index}.pdf`;
-                            link.textContent = `game_cards_${index}.pdf`;
-                            link.className = "";
+            },
+            error: function (xhr, status, error) {
+                $('#deletionStatus').removeClass('alert-primary').addClass('alert-danger');
+                $('#deletionStatus').html(`Error removing songs: ${error}`);
+        
+            }
+            
+        });
+}
+   function generateCards() {
+        $("#songDownload").empty();
+        let songList = [];
+        $('table > tbody  > tr').each(function (index, tr) {
+            if (!document.getElementById('selected-' + tr.id.replace('song-', '')).checked) {
+                return;
+            }
+            let song = {
+                token: tr.id.replace('song-', ''),
+                artist: document.getElementById('artist-' + tr.id.replace('song-', '')).value,
+                title: document.getElementById('title-' + tr.id.replace('song-', '')).value,
+                year: document.getElementById('year-' + tr.id.replace('song-', '')).value,
+                print: document.getElementById('selected-' + tr.id.replace('song-', '')).checked
+            };
+            songList.push(song);
+        });
 
-                            link.id = "downloadLink";
-                            const li = document.createElement('li');
-                            li.appendChild(link);
-                            document.getElementById('songDownload').appendChild(li);
+        if (songList.length === 0) {
+            $('#generationStatus').removeClass('alert-primary').addClass('alert-danger');
+            $('#generationStatus').html(`No songs selected for game cards generation.`);
+            return;
+        }
 
-                        },
-                        error: function (xhr, status, error) {
-                            $('#generationStatus').removeClass('alert-primary').addClass('alert-danger');
-                            $('#generationStatus').html(`Error generating game cards: ${error}`);
-                            noOfErrors++;
-                        },
-                        complete: function () {
-                            finished++;
-                            if (finished === songListChunks.length) {
-                                $('#generationStatus').removeClass('alert-primary').addClass('alert-success');
-                                $('#generationStatus').html(`Successfully generated all game cards.`);
-                            }
-                        }
-                    });
-                });
-                if (noOfErrors == 0) {
-                    //  $('#generationStatus').removeClass('alert-primary').addClass('alert-success');
-                    //  $('#generationStatus').html(`Successfully generated all game cards.`);
+        let songListChunks = [];
+        const chunkSize = {{ chunk_size }};
+    for (let i = 0; i < songList.length; i += chunkSize) {
+        let chunk = songList.slice(i, i + chunkSize);
+        songListChunks.push(chunk);
+    }
+    let finished = 0;
+    //console.log(songListChunks);
+    $(songListChunks).each(function (index, chunk) {
+        //console.log(`Processing chunk ${index + 1} of ${songListChunks.length}`);
+        $('#genNum').text(`${index + 1} of ${songListChunks.length}`);
+        $.ajax({
+            url: '/songs/generate_cards',
+            type: 'POST',
+            data: JSON.stringify(chunk),
+            contentType: 'application/json',
+            xhrFields: {
+                responseType: 'blob'
+            },
+            success: function (response) {
 
+                const blob = new Blob([response], { type: "application/pdf" });
+
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `game_cards_${index}.pdf`;
+                link.textContent = `game_cards_${index}.pdf`;
+                link.className = "";
+
+                link.id = "downloadLink";
+                const li = document.createElement('li');
+                li.appendChild(link);
+                document.getElementById('songDownload').appendChild(li);
+
+            },
+            error: function (xhr, status, error) {
+                $('#generationStatus').removeClass('alert-primary').addClass('alert-danger');
+                $('#generationStatus').html(`Error generating game cards: ${error}`);
+                noOfErrors++;
+            },
+            complete: function () {
+                finished++;
+                if (finished === songListChunks.length) {
+                    $('#generationStatus').removeClass('alert-primary').addClass('alert-success');
+                    $('#generationStatus').html(`Successfully generated all game cards.`);
                 }
             }
+        });
+    });
+    }
 
-            
+
     function reloadPage() {
         location.reload();
     }
-        </script>
+</script>
 
-        {% endblock %}
+{% endblock %}
 
-        {% block includes %}
-        <script src="{{ url_for('static', filename='js/songs.js') }}"></script>
-        {% endblock %}
+{% block includes %}
+<script src="{{ url_for('static', filename='js/songs.js') }}"></script>
+{% endblock %}
