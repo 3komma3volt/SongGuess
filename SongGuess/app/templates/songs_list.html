@@ -24,9 +24,9 @@
             {% for song in songs %}
             <tr id="song-{{ song.song_token }}">
                 <td class="align-middle">{{ song.song_token }}</td>
-                <td><input id="artist-{{ song.song_token }}" class="form-control form-control-sm" type="text"
+                <td><input id="artist-{{ song.song_token }}" class="form-control form-control-sm {% if song.artist == "Unknown" %}bg-danger{% endif %}" type="text"
                         value="{{ song.artist }}" oninput="changed('{{ song.song_token }}')"></td>
-                <td><input id="title-{{ song.song_token }}" class="form-control form-control-sm" type="text"
+                <td><input id="title-{{ song.song_token }}" class="form-control form-control-sm {% if song.title == "Unknown" %}bg-danger{% endif %}" type="text"
                         value="{{ song.title }}" oninput="changed('{{ song.song_token }}')"></td>
                 <td><input id="year-{{ song.song_token }}"
                         class="form-control form-control-sm {% if song.year == 0 %}bg-danger{% endif %}" type="number"

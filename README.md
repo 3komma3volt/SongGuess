@@ -79,4 +79,3 @@ Let the other player guess the artist, the title or the year and give them one p
 Here some maybe features for future development
 - Add option to add song categories
 - Add play by category option
-- Add options to delete or disable songs

@@ -1,5 +1,4 @@
     function changed(token) {
-     //   $(`#song-${token} button`).removeAttr('hidden');
      let btn = `<button class="btn btn-primary btn-sm" onclick="saveSong('${token}');"><i class="bi bi-floppy"></i></button>`;
         $(`#state-${token}`).html(btn);
     }
@@ -17,6 +16,12 @@
                 if (response['error'] == 0) {
                     console.log(`Song saved successfully.`);
                     $(`#year-${token}`).removeClass('bg-danger');
+                    if(response['data'].artist !== "Unknown") {
+                        $(`#artist-${token}`).removeClass('bg-danger');
+                    }
+                    if(response['data'].title !== "Unknown") {
+                        $(`#title-${token}`).removeClass('bg-danger');
+                    }
                     $(`#state-${token}`).html('<div class="badge bg-success ms-1 me-1"><i class="bi bi-check me-1"></i>OK</div>');
                 } else {
                     console.error(`Error saving song ${response['message']}`);

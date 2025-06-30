@@ -1,6 +1,7 @@
 import os
 import secrets
 import tempfile
+import time
 
 import sqlalchemy
 from flask import Blueprint, current_app, jsonify, render_template, request, send_file, url_for
@@ -111,8 +112,8 @@ def songs_upload():
                         'message': 'File is not a valid MP3.'
                     })
 
-                artist = song_data.get('artist', "Unknown")[0]
-                title = song_data.get('title', "Unknown")[0]
+                artist = song_data.get('artist', ["Unknown"])[0]
+                title = song_data.get('title', ["Unknown"])[0]
                 year = song_data.get('date', [0])[0]
 
                 song_data = Songs(
@@ -221,7 +222,8 @@ def songs_save():
                 'error': 42,
                 'message': 'Artist and title cannot be empty.'
             })
-        if int(data.get('year', 0)) < 1900 or int(data.get('year', 3000)) > 2100:
+        current_year = time.localtime().tm_year
+        if int(data.get('year', 0)) < 1800 or int(data.get('year', current_year + 1)) > current_year:
             return jsonify({
                 'error': 50,
                 'message': 'Year not plaussible.'
@@ -243,5 +245,11 @@ def songs_save():
 
         return jsonify({
             'error': 0,
-            'message': 'Song updated successfully.'
+            'message': 'Song updated successfully.',
+            'data': {
+                'artist': song.artist,
+                'title': song.title,
+                'year': song.year,
+                'token': song.song_token
+            }
         })

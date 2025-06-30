@@ -48,18 +48,19 @@
                     success: function (response) {
                         $('#songList').removeClass('visually-hidden');
                         if (response['error'] == 0) {
-                            let errorColor = '';
-                            if(response['message'].year === 0) {
-                                errorColor="bg-danger";
-                            }
+                            let yearErrorColor = response['message'].year === 0 ? "bg-danger" : "";
+                            let artistErrorColor = response['message'].artist === "Unknown" ? "bg-danger" : "";
+                            let titleErrorColor = response['message'].title === "Unknown" ? "bg-danger" : "";
+
+                            const currentYear = new Date().getFullYear();
                             
                             //console.log(response['message']);
                             $('#songListBody').append(`
                             <tr id="song-${response['message'].token}">
                                 <td>${response['message'].filename}</td>
-                                <td><input id="artist-${response['message'].token}" class="form-control form-control-sm" type="text" value="${response['message'].artist}" onkeypress="changed('${response['message'].token}')"></td>
-                                <td><input id="title-${response['message'].token}" class="form-control form-control-sm" type="text" value="${response['message'].title}" onkeypress="changed('${response['message'].token}')"></td>
-                                <td><input id="year-${response['message'].token}" class="form-control form-control-sm ${errorColor}" type="number" min="1900" max="2050" value="${response['message'].year}" onchange="changed('${response['message'].token}')"></td>
+                                <td><input id="artist-${response['message'].token}" class="form-control form-control-sm ${artistErrorColor}" type="text" value="${response['message'].artist}" oninput="changed('${response['message'].token}')"></td>
+                                <td><input id="title-${response['message'].token}" class="form-control form-control-sm ${titleErrorColor}" type="text" value="${response['message'].title}" oninput="changed('${response['message'].token}')"></td>
+                                <td><input id="year-${response['message'].token}" class="form-control form-control-sm ${yearErrorColor}" type="number" min="1800" max="${currentYear}" value="${response['message'].year}" oninput="changed('${response['message'].token}')"></td>
                                 <td><a href="https://www.discogs.com/search/?q=${response['message'].artist}+${response['message'].title}&type=release" target="_blank"><i class="bi bi-disc me-1"></i>Search</a></td>
                                 <td id="state-${response['message'].token}"></td>
                                 </tr>   
