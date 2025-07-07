@@ -76,3 +76,5 @@ instance/
 /SongGuess/app/musicfolder/*.mp3
 /SongGuess/app/data.sqlite
 /SongGuess/scss/bootstrap-*/
+/assets/songguess_release.svg
+/assets/[0-9].[0-9].png

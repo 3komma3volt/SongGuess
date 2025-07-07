@@ -42,3 +42,11 @@ a {
     text-decoration: underline;
   }
 }
+
+.nav-link {
+  color: $info !important;
+  
+  &:hover {
+    color: lighten($info, 10%) !important;
+  }
+}

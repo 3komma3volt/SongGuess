@@ -11873,4 +11873,11 @@ a:hover {
   text-decoration: underline;
 }
 
+.nav-link {
+  color: #6c7ae0 !important;
+}
+.nav-link:hover {
+  color: rgb(150.1179775281, 160.106741573, 232.8820224719) !important;
+}
+
 /*# sourceMappingURL=bs-custom.css.map */

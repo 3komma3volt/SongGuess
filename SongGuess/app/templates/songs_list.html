@@ -9,6 +9,7 @@
     <table class="table" id="songList">
         <thead>
             <tr>
+                <th scope="col">#</th>
                 <th scope="col">Token</th>
                 <th scope="col">Artist</th>
                 <th scope="col">Title</th>
@@ -21,8 +22,10 @@
             </tr>
         </thead>
         <tbody id="songListBody">
+            {% set songNumber = namespace(counter=1) %}
             {% for song in songs %}
             <tr id="song-{{ song.song_token }}">
+                <td class="align-middle">{{ songNumber.counter }}</td>
                 <td class="align-middle">{{ song.song_token }}</td>
                 <td><input id="artist-{{ song.song_token }}" class="form-control form-control-sm {% if song.artist == "Unknown" %}bg-danger{% endif %}" type="text"
                         value="{{ song.artist }}" oninput="changed('{{ song.song_token }}')"></td>
@@ -42,6 +45,7 @@
                 <td id="state-{{ song.song_token }}"></td>
 
             </tr>
+            {% set songNumber.counter = songNumber.counter + 1 %}
             {% endfor %}
 
         </tbody>
